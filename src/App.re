@@ -5,10 +5,10 @@ type item = {
   title: string,
 };
 
-let initialItems = [|
+let initialItems = [
   {id: 1, title: "First item"},
   {id: 2, title: "Second item"},
-|];
+];
 
 let make = _children => {
   ...component,
@@ -20,10 +20,15 @@ let make = _children => {
       <section className="main">
         <ul className="todo-list">
           {ReasonReact.array(
-             Array.map(
-               item =>
-                 <ToDoItem key={string_of_int(item.id)} title={item.title} />,
-               initialItems,
+             Array.of_list(
+               List.map(
+                 item =>
+                   <ToDoItem
+                     key={string_of_int(item.id)}
+                     title={item.title}
+                   />,
+                 initialItems,
+               ),
              ),
            )}
         </ul>
