@@ -1,6 +1,7 @@
 type item = {
   id: int,
   title: string,
+  complete: bool,
 };
 
 type state = {
@@ -10,14 +11,15 @@ type state = {
 
 type action =
   | EnterKeyDown
-  | UpdateInputText(string);
+  | UpdateInputText(string)
+  | ToggleStatus(int);
 
 let component = ReasonReact.reducerComponent("App");
 
 let make = _children => {
   ...component,
   initialState: () => {
-    items: [{id: 1, title: "First item"}, {id: 2, title: "Second item"}],
+    items: [{id: 1, title: "First item", complete: true}],
     currentText: "",
   },
   reducer: (action, state) => {
@@ -26,10 +28,23 @@ let make = _children => {
     | EnterKeyDown =>
       ReasonReact.Update({
         ...state,
-        items: [{id: List.length(items) + 1, title: currentText}, ...items],
+        items: [
+          {id: List.length(items) + 1, title: currentText, complete: false},
+          ...items,
+        ],
       })
     | UpdateInputText(text) =>
       ReasonReact.Update({...state, currentText: text})
+    | ToggleStatus(id) =>
+      ReasonReact.Update({
+        ...state,
+        items:
+          List.map(
+            item =>
+              item.id == id ? {...item, complete: !item.complete} : item,
+            state.items,
+          ),
+      })
     };
   },
   render: self =>
@@ -57,8 +72,10 @@ let make = _children => {
                List.map(
                  item =>
                    <ToDoItem
+                     onClick={_e => self.send(ToggleStatus(item.id))}
                      key={string_of_int(item.id)}
                      title={item.title}
+                     complete={item.complete}
                    />,
                  self.state.items,
                ),

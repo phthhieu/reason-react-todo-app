@@ -1,11 +1,13 @@
 let component = ReasonReact.statelessComponent("ToDoItem");
 
-let make = (~title, _children) => {
+let make = (~title, ~complete, ~onClick, _children) => {
   ...component,
-  render: _self =>
-    <li>
+  render: _self => {
+    let className = complete ? "line-through" : "";
+    <li onClick className>
       <div className="view">
         <label> {ReasonReact.string(title)} </label>
       </div>
-    </li>,
+    </li>;
+  },
 };
